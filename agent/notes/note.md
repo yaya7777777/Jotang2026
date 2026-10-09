@@ -64,3 +64,38 @@
   - 泄露机密：把API或者个人隐私信息发到外部网络
   - 恶意攻击：黑客连接了Agent，就可以通过其对电脑进行攻击植入木马病毒等
 - 所以现在的Agent在执行终端操作的时候通常都会征求用户同意授权，或者利用沙盒将其与真正终端隔离开
+
+---
+
+## task3
+
+### 1.给Claude配置MCP
+
+先去github上找寻一下常用的MCP
+![alt text](image-11.png)
+*这个就不错，扩展了Agent联网搜索能力*
+
+安装配置和依赖
+![alt text](a098b6a8812cc5ea7e2e2df1b6eab96a.png)
+![alt text](55bcb60d299814f5dbc2fb6ce78349f8.png)
+
+获取外部服务的API Key，因为这个用的是Perplexity的搜索接口
+我将去官网上薅一个API
+![alt text](image-12.png)
+
+然后要配置一下settings.json文件
+![alt text](image-13.png)
+
+接下来就可以试着运行一下Claude
+![alt text](image-14.png)
+![alt text](image-15.png)
+*完全是可以的呢*
+
+### 2.体验一下VS Code插件工具
+
+选一个提供各种skill的插件工具
+![alt text](image-16.png)
+
+
+它也可以读取文件、引用文件、操作文件
+![alt text](image-17.png)

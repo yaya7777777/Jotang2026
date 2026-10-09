@@ -1,0 +1,3 @@
+E:/my_file/Jotang2026/build/CMakeFiles/calculator.dir
+E:/my_file/Jotang2026/build/CMakeFiles/edit_cache.dir
+E:/my_file/Jotang2026/build/CMakeFiles/rebuild_cache.dir

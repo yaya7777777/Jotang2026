@@ -1,0 +1,14 @@
+[
+{
+  "directory": "E:/my_file/Jotang2026/build",
+  "command": "C:\\MinGW\\mingw64\\bin\\gcc.exe  @CMakeFiles\\calculator.dir\\includes_C.rsp -g -o CMakeFiles\\calculator.dir\\src\\main.c.obj -c E:\\my_file\\Jotang2026\\make-cmake-recruit\\make-cmake-recruit\\cmake-task\\src\\main.c",
+  "file": "E:/my_file/Jotang2026/make-cmake-recruit/make-cmake-recruit/cmake-task/src/main.c",
+  "output": "CMakeFiles/calculator.dir/src/main.c.obj"
+},
+{
+  "directory": "E:/my_file/Jotang2026/build",
+  "command": "C:\\MinGW\\mingw64\\bin\\gcc.exe  @CMakeFiles\\calculator.dir\\includes_C.rsp -g -o CMakeFiles\\calculator.dir\\src\\calculator.c.obj -c E:\\my_file\\Jotang2026\\make-cmake-recruit\\make-cmake-recruit\\cmake-task\\src\\calculator.c",
+  "file": "E:/my_file/Jotang2026/make-cmake-recruit/make-cmake-recruit/cmake-task/src/calculator.c",
+  "output": "CMakeFiles/calculator.dir/src/calculator.c.obj"
+}
+]
