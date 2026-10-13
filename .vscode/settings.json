@@ -1,3 +1,5 @@
 {
-    "cmake.sourceDirectory": "E:/my_file/Jotang2026/make-cmake-recruit/make-cmake-recruit/cmake-task"
+    "cmake.sourceDirectory": "E:/my_file/Jotang2026/make-cmake-recruit/make-cmake-recruit/cmake-task",
+    "specstory.cloudSync.enabled": "never",
+    "markdown.validate.enabled": true
 }
