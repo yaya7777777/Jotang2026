@@ -1,2 +1,10 @@
 # Trae 内部配置，不推送
 .specstory/
+
+# 数据集（37500 张图片，体积过大，不进 git）
+Jotang-ml-task2/train/
+Jotang-ml-task2/test1/
+
+# 缓存
+__pycache__/
+*.pyc
