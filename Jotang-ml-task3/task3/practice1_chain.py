@@ -2,8 +2,18 @@
 
 沿计算图手动链式求导，NumPy 反向传播，再用 PyTorch autograd 对照
 """
+import sys
+
 import numpy as np
 import torch
+
+# Windows 终端中文防乱码：stdout 强制 UTF-8，并把控制台输出代码页切到 65001
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+    import ctypes
+    ctypes.windll.kernel32.SetConsoleOutputCP(65001)
+except Exception:
+    pass
 
 # 选定一组 x, y 值，用于计算 f(x, y) 的梯度
 x_val, y_val = 2.0, 3.0
@@ -51,10 +61,10 @@ print(f"  df/dy = {ty.grad.item()}")
 
 
 # 逐项比较
-err_x = abs(dx - tx.grad.item())
-err_y = abs(dy - ty.grad.item())
+err_x = abs(dx - tx.grad.item())# df/dx 误差
+err_y = abs(dy - ty.grad.item())# df/dy 误差
 print("\n对照结果")
 print(f"df/dx: NumPy={dx:.6f}  PyTorch={tx.grad.item():.6f}  误差={err_x:.2e}")
 print(f"df/dy: NumPy={dy:.6f}  PyTorch={ty.grad.item():.6f}  误差={err_y:.2e}")
-print(f"最大绝对误差 = {max(err_x, err_y):.2e}")
+print(f"最大绝对误差 = {max(err_x, err_y):.2e}")# 最大绝对误差
 print("结果一致!" if max(err_x, err_y) < 1e-9 else "结果不一致!")

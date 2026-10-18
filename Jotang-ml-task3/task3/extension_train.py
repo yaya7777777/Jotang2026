@@ -1,7 +1,7 @@
 """拓展：用 NumPy 手写的反向传播 + 最基础 SGD 训练完整 make_moons
 
 结构: X -> Linear(2->16) -> ReLU -> Linear(16->1) -> Sigmoid -> BCE
-绘制 loss / accuracy / 二维决策边界，并与 Task1 的 PyTorch 模型简单对比。
+绘制 loss / accuracy / 二维决策边界，并与 Task1 的 PyTorch 模型简单对比
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,14 +11,13 @@ np.random.seed(42)
 plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei']
 plt.rcParams['axes.unicode_minus'] = False
 
-# ============================================================
+
 # 数据
-# ============================================================
 X, y = make_moons(n_samples=1000, noise=0.15, random_state=42)
 X = X.astype(np.float64)
 y = y.astype(np.float64)
 
-# 划分 70/20/10
+# 划分数据集 70/20/10
 N = len(X)
 idx = np.random.permutation(N)
 n_tr, n_val = int(0.7 * N), int(0.2 * N)
@@ -36,9 +35,8 @@ Xs = (X - mean) / std   # 画图用
 
 print(f"train={len(Xtr)} val={len(Xva)} test={len(Xte)}")
 
-# ============================================================
+
 # 初始化参数
-# ============================================================
 D, H = 2, 16
 W1 = np.random.randn(H, D) * 0.5
 b1 = np.zeros(H)
@@ -53,22 +51,20 @@ def forward(X, W1, b1, W2, b2):
     p = 1 / (1 + np.exp(-z2))
     return z1, h, z2, p
 
-
+# 损失函数：BCE=CrossEntropyLoss
 def bce(p, y):
     y = y.reshape(-1, 1)
     eps = 1e-12
     return -np.mean(y * np.log(p + eps) + (1 - y) * np.log(1 - p + eps))
 
-
+# 准确率
 def acc(X, y, W1, b1, W2, b2):
     _, _, _, p = forward(X, W1, b1, W2, b2)
     pred = (p.ravel() > 0.5).astype(float)
     return (pred == y).mean()
 
 
-# ============================================================
 # SGD 训练
-# ============================================================
 lr = 0.5
 epochs = 200
 hist_loss, hist_tr, hist_va = [], [], []
@@ -87,7 +83,7 @@ for ep in range(epochs):
     dW1 = dz1.T @ Xtr
     db1 = dz1.sum(axis=0)
 
-    # SGD 更新
+    # SGD 更新参数
     W1 -= lr * dW1; b1 -= lr * db1
     W2 -= lr * dW2; b2 -= lr * db2
 
@@ -100,11 +96,10 @@ for ep in range(epochs):
 
 test_acc = acc(Xte, yte, W1, b1, W2, b2)
 print(f"\nNumPy SGD Test Acc = {test_acc:.4f}")
-print("(对比: Task1 PyTorch MLP Test Acc ≈ 0.98)")
+print("(Compare: Task1 PyTorch MLP Test Acc ≈ 0.98)")
 
-# ============================================================
+
 # 画图
-# ============================================================
 import os
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'results')
 os.makedirs(out, exist_ok=True)
@@ -133,4 +128,3 @@ plt.title(f'NumPy SGD Decision Boundary (Test Acc={test_acc:.3f})')
 plt.legend(); plt.tight_layout()
 plt.savefig(os.path.join(out, 'numpy_sgd_boundary.png'), dpi=150)
 plt.close()
-print("图已保存到 results/")
