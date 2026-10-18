@@ -1,9 +1,18 @@
-"""推理程序：输入本地图片，输出猫/狗预测概率"""
+"""推理程序：输入一张本地图片，输出猫/狗及预测概率"""
+import os, argparse
 import torch
 import torch.nn as nn
-from PIL import Image
 import numpy as np
-import argparse
+from PIL import Image
+from torchvision import transforms
+import sys
+# Windows 终端中文防乱码：stdout 强制 UTF-8，并把控制台输出代码页切到 65001
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+    import ctypes
+    ctypes.windll.kernel32.SetConsoleOutputCP(65001)
+except Exception:
+    pass
 
 class CatDogCNN(nn.Module):
     def __init__(self):
@@ -15,33 +24,38 @@ class CatDogCNN(nn.Module):
         self.fc1 = nn.Linear(128 * 8 * 8, 256)
         self.fc2 = nn.Linear(256, 2)
     def forward(self, x):
-        x = self.pool(nn.ReLU()(self.conv1(x)))
-        x = self.pool(nn.ReLU()(self.conv2(x)))
-        x = self.pool(nn.ReLU()(self.conv3(x)))
-        x = x.view(-1, 128 * 8 * 8)
-        x = nn.ReLU()(self.fc1(x))
+        x = self.pool(nn.functional.relu(self.conv1(x)))
+        x = self.pool(nn.functional.relu(self.conv2(x)))
+        x = self.pool(nn.functional.relu(self.conv3(x)))
+        x = x.view(x.size(0), -1)
+        x = nn.functional.relu(self.fc1(x))
         return self.fc2(x)
 
-def predict(img_path, model_path='weights/best.pth'):
+BASE = os.path.dirname(os.path.abspath(__file__))
+
+def predict(img_path, model_path=None):
+    model_path = model_path or os.path.join(BASE, 'weights', 'best.pth')
+    # 相对路径：优先按当前目录找，找不到再按脚本所在目录找，两种 cwd 下都能跑
+    if not os.path.isabs(img_path) and not os.path.exists(img_path):
+        img_path = os.path.normpath(os.path.join(BASE, img_path))
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = CatDogCNN().to(device)
     model.load_state_dict(torch.load(model_path, map_location=device, weights_only=True))
     model.eval()
-    img = Image.open(img_path).convert('RGB').resize((64, 64))
-    x = torch.tensor(np.array(img).transpose(2, 0, 1), dtype=torch.float32).unsqueeze(0) / 255.0
-    x = x.to(device)
+    # 与训练/测试时一致的预处理
+    tf = transforms.Compose([transforms.Resize((64, 64)), transforms.ToTensor()])
+    x = tf(Image.open(img_path).convert('RGB')).unsqueeze(0).to(device)
     with torch.no_grad():
-        logits = model(x)
-        probs = torch.softmax(logits, dim=1)
-    cat_prob = probs[0, 0].item()
-    dog_prob = probs[0, 1].item()
-    label = '猫' if cat_prob > dog_prob else '狗'
-    print(f"{label} (猫 {cat_prob*100:.1f}% / 狗 {dog_prob*100:.1f}%)")
-    return img, label, cat_prob, dog_prob
+        probs = torch.softmax(model(x), dim=1)[0]
+    cat_p, dog_p = probs[0].item(), probs[1].item()
+    label = '猫' if cat_p > dog_p else '狗'
+    print(f"{label}  (cat {cat_p*100:.1f}% / dog {dog_p*100:.1f}%)")
+    return label, cat_p, dog_p
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--img', required=True, help='输入图片路径')
-    parser.add_argument('--model', default='weights/best.pth', help='模型权重路径')
+    parser.add_argument('--img', default=os.path.join('..', 'test1', '1.jpg'),
+                        help='输入图片路径（默认 ../test1/1.jpg）')
+    parser.add_argument('--model', default=None, help='模型权重路径（默认 weights/best.pth）')
     args = parser.parse_args()
     predict(args.img, args.model)
